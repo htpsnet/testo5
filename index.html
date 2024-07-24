@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>受信データ保存</title>
+</head>
+<body>
+    <h1>送信されたデータを保存</h1>
+    <h2>保存されたデータ</h2>
+    <ul id="dataList"></ul>
+
+    <script>
+        // URLパラメータを取得する関数
+        function getQueryParams() {
+            const params = {};
+            window.location.search.substring(1).split("&").forEach(pair => {
+                const [key, value] = pair.split("=");
+                params[decodeURIComponent(key)] = decodeURIComponent(value.replace(/\+/g, ' '));
+            });
+            return params;
+        }
+
+        // 送信されたデータを取得して保存する関数
+        function saveData() {
+            const params = getQueryParams();
+            if (params.name && params.email) {
+                const data = { name: params.name, email: params.email };
+
+                let storedData = JSON.parse(localStorage.getItem('formData')) || [];
+                storedData.push(data);
+                localStorage.setItem('formData', JSON.stringify(storedData));
+
+                displayData();
+            }
+        }
+
+        // 保存されたデータを表示する関数
+        function displayData() {
+            const dataList = document.getElementById('dataList');
+            dataList.innerHTML = '';
+
+            const storedData = JSON.parse(localStorage.getItem('formData')) || [];
+            storedData.forEach(data => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `名前: ${data.name}, メールアドレス: ${data.email}`;
+                dataList.appendChild(listItem);
+            });
+        }
+
+        // ページが読み込まれたときに保存されたデータを表示する
+        document.addEventListener('DOMContentLoaded', () => {
+            saveData();
+            displayData();
+        });
+    </script>
+</body>
+</html>
